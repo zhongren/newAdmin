@@ -116,8 +116,8 @@ public class BaseController {
         Integer pageSize = StringUtil.getInteger(getParam(ParamBean.PAGE_SIZE));
         paramBean.setPageNum(pageNum == null ? 1 : pageNum);
         paramBean.setPageSize(pageSize == null ? 20 : pageSize);
-        //paramBean.setOrderType(getParam(ParamBean.ORDER_TYPE));
-        //paramBean.setOrderField(getParam(ParamBean.ORDER_FIELD));
+        paramBean.setOrderType(getParam(ParamBean.ORDER_TYPE));
+        paramBean.setOrderField(getParam(ParamBean.ORDER_FIELD));
         Map<String,String> orderMap=paramBean.getOrderMap();
         orderMap.put("create_time","desc");
         paramBean.putAll(getParamMap(ParamBean.PAGE_NUM, ParamBean.PAGE_SIZE, ParamBean.ORDER_TYPE, ParamBean.ORDER_FIELD));
