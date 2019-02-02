@@ -9,8 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -43,6 +50,27 @@ public class BaseExceptionHandler {
         logger.error(exception.getCode() + ":" + exception.getMessage(), exception);
         return response(getExceptionResultBean(exception), HttpStatus.OK);
     }
+
+    /**
+     * 请求参数异常
+     *
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<ResultBean> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException     exception) {
+        List<ObjectError> list= exception.getBindingResult().getAllErrors();
+        Map<String,String> validMap=new HashMap<>();
+        for(ObjectError objectError:list){
+            FieldError fieldError=(FieldError) objectError;
+            String field=fieldError.getField();
+            String valid=fieldError.getDefaultMessage();
+            validMap.put(field,valid);
+        }
+        ResultBean resultBean=new ResultBean(ResultBean.FAIL,"参数校验异常",validMap);
+        return response(resultBean, HttpStatus.OK);
+    }
+
 
     private ResultBean getExceptionResultBean(BaseException exception) {
         return new ResultBean(exception.getCode(), exception.getMessage());

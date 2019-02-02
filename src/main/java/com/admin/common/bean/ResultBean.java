@@ -50,7 +50,7 @@ public class ResultBean implements Serializable {
 
     }
 
-    private ResultBean(String code, String msg, Object data) {
+    public ResultBean(String code, String msg, Object data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
