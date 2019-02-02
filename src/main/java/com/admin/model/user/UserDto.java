@@ -11,7 +11,7 @@ import java.util.Set;
  * @date 2017/11/9
  */
 
-public class UserVo extends BaseVo {
+public class UserDto extends BaseVo {
     private String name;
     @JsonIgnore
     private String password;
@@ -72,7 +72,7 @@ public class UserVo extends BaseVo {
 
     @Override
     public String toString() {
-        return "UserVo{" +
+        return "UserDto{" +
                 "name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", account='" + account + '\'' +

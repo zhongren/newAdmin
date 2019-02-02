@@ -19,11 +19,13 @@ public class BeanUtil extends BeanUtils {
         if (map == null || map.isEmpty() || tClass == null) {
             return null;
         }
+
         T t = null;
         try {
             t = tClass.newInstance();
-            translateMapProperty(map);
+            //translateMapProperty(map);
             populate(t, map);
+            cn.hutool.core.bean.BeanUtil.mapToBean(map,tClass,true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,12 +48,14 @@ public class BeanUtil extends BeanUtils {
         if (bean == null) {
             return null;
         }
+
         Map<String, Object> map = new HashMap<>();
         try {
             Field[] fields = bean.getClass().getDeclaredFields();
             for (Field field : fields) {
                 String key = field.getName();
-                Object value = getNestedProperty(bean, field.getName());
+                //保证转换的时候类型不丢失
+                Object value = cn.hutool.core.bean.BeanUtil.getProperty(bean, field.getName());
                 key=StringUtil.camelToUnderline(key);
                 map.put(key, value);
             }

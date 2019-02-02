@@ -1,13 +1,12 @@
 package com.admin.controller;
 
 import com.admin.common.base.BaseController;
-import com.admin.common.bean.ParamBean;
 import com.admin.common.bean.ResultBean;
 import com.admin.common.exception.AuthException;
 import com.admin.common.exception.BaseException;
 import com.admin.common.exception.enums.AuthEnum;
+import com.admin.model.user.UserDto;
 import com.admin.model.user.UserParamVo;
-import com.admin.model.user.UserVo;
 import org.apache.shiro.SecurityUtils;
 
 import org.apache.shiro.authc.DisabledAccountException;
@@ -15,7 +14,6 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.web.servlet.SimpleCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -44,7 +42,7 @@ public class AuthController extends BaseController {
         UsernamePasswordToken token = new UsernamePasswordToken(account, password);
         try {
             subject.login(token);
-            UserVo user = (UserVo) subject.getPrincipal();
+            UserDto user = (UserDto) subject.getPrincipal();
             user.setSid(subject.getSession().getId());
             //remember(true);
             return success(user, "登陆成功");

@@ -8,9 +8,11 @@ import com.admin.common.orm.condition.ConditionMap;
 import com.admin.common.orm.condition.Op;
 import com.admin.common.orm.condition.UpdateValue;
 import com.admin.common.orm.criteria.CreateCriteria;
+import com.admin.common.orm.criteria.DeleteCriteria;
 import com.admin.common.orm.criteria.SearchCriteria;
 import com.admin.common.orm.criteria.UpdateCriteria;
 import com.admin.common.util.BeanUtil;
+import com.github.pagehelper.PageHelper;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -30,6 +32,7 @@ public abstract class BaseRepo {
     private static String FIND = "com.admin.common.orm.BaseMapper.find";
     private static String CREATE = "com.admin.common.orm.BaseMapper.create";
     private static String UPDATE = "com.admin.common.orm.BaseMapper.update";
+    private static String DELETE = "com.admin.common.orm.BaseMapper.delete";
     @Autowired
     protected SqlSessionTemplate sqlSessionTemplate;
 
@@ -114,6 +117,10 @@ public abstract class BaseRepo {
         CreateCriteria createCriteria = new CreateCriteria(tableName);
         List<Condition> conditionList = new ArrayList<>();
         for (Map.Entry<String, Object> map : param.entrySet()) {
+            if(map.getValue()!=null){
+                System.out.println(map.getKey()+"类型"+map.getValue().getClass());
+            }
+
             Condition condition = new Condition(map.getKey(), map.getValue());
             conditionList.add(condition);
         }
@@ -140,14 +147,33 @@ public abstract class BaseRepo {
         return updateCriteria;
     }
 
+
+    /**
+     * 删除
+     * @param conditions
+     * @return
+     */
+
+    private DeleteCriteria createDeleteCriteria(Condition... conditions) {
+        Table table = AnnotationUtils.findAnnotation(this.getClass(), Table.class);
+        String tableName = table.name();
+        DeleteCriteria deleteCriteria = new DeleteCriteria(tableName);
+        if (conditions != null && conditions.length > 0) {
+            deleteCriteria.setConditionList(Arrays.asList(conditions));
+        }
+        return deleteCriteria;
+    }
+
+
+
     /**
      * 查询对象（map）集合
      *
      * @param param
      * @return
      */
-    public List<Map<String, Object>> findMapList(Map<String, Object> param) {
-        SearchCriteria searchCriteria = createSearchCriteria(param);
+    public List<Map<String, Object>> findMapList(Map<String, Object> param, String... columns) {
+        SearchCriteria searchCriteria = createSearchCriteria(param,columns);
         List<Map<String, Object>> data = sqlSessionTemplate.selectList(FIND, searchCriteria);
         for (Map<String, Object> map : data) {
             BeanUtil.translateMapProperty(map);
@@ -235,13 +261,28 @@ public abstract class BaseRepo {
         return BeanUtil.convertMap2List(list, tClass);
     }
 
+    /**
+     * 根据条件集合查询对象（map）集合,转换为对象集合（class）
+     * @param param
+     * @param tClass
+     * @param columns
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> findListBy(Map<String,Object> param, Class<T> tClass, String... columns) {
+        List<Map<String, Object>> list = findMapList(param, columns);
+        return BeanUtil.convertMap2List(list, tClass);
+    }
+
+
+
     private Object createMap(Map<String, Object> param) {
         CreateCriteria createCriteria = createCreateCriteria(param);
         sqlSessionTemplate.insert(CREATE, createCriteria);
         return createCriteria.getId();
     }
 
-    private int updateMap(Map<String, Object> param, Condition condition) {
+    private Object updateMap(Map<String, Object> param, Condition condition) {
         UpdateCriteria updateCriteria = createUpdateCriteria(param, condition);
         return sqlSessionTemplate.update(UPDATE, updateCriteria);
     }
@@ -261,16 +302,25 @@ public abstract class BaseRepo {
     /**
      * 更新对象
      *
-     * @param by    更新的条件字段
+     * @param field    更新的条件字段
      * @param value 更新的条件字段的值
      * @param bean
      * @param <T>
      * @return
      */
-    public <T> int update(String by, Object value, T bean) {
+    public <T> Object update(String field, Object value, T bean) {
         Map<String, Object> map = BeanUtil.convertBean2Map(bean);
-        Condition condition = new Condition(by, Op.EQ, value);
+        Condition condition = new Condition(field, Op.EQ, value);
         return updateMap(map, condition);
+    }
+    private int deleteMap(Condition condition) {
+        DeleteCriteria deleteCriteria = createDeleteCriteria(condition);
+        return sqlSessionTemplate.delete(DELETE, deleteCriteria);
+    }
+
+    public  int delete(String field, Object value) {
+        Condition condition = new Condition(field, Op.EQ, value);
+        return deleteMap(condition);
     }
 
 }

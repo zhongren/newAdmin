@@ -3,6 +3,7 @@ package com.admin.common.util;
 import com.admin.common.bean.ParamBean;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author zhongren
@@ -17,11 +18,11 @@ public class PageUtil {
         if (pageParam.getPageNum()>0){
             page = PageHelper.startPage(pageParam.getPageNum(),pageParam.getPageSize());
         }
-        /*
-        if (!StringUtils.isEmpty(pageParamModel.orderBy())){
-            PageHelper.orderBy(pageParamModel.orderBy());
+
+        if (StringUtils.isNotBlank(pageParam.orderBy())){
+            PageHelper.orderBy(pageParam.orderBy());
         }
-        */
+
         return page;
     }
 }

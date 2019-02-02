@@ -3,13 +3,11 @@ package com.admin.controller;
 import com.admin.common.bean.ParamBean;
 import com.admin.common.base.BaseController;
 import com.admin.common.bean.ResultBean;
-import com.admin.model.user.UserVo;
+import com.admin.model.user.UserDto;
 import com.admin.service.UserService;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -36,17 +34,17 @@ public class UserController extends BaseController {
     @RequestMapping(value = "create", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     public ResultBean create() {
-        UserVo userVo=new UserVo();
-        userVo.setAccount("ccc");
-        return success(userService.create(userVo), "添加");
+        UserDto userDto =new UserDto();
+        userDto.setAccount("ccc");
+        return success(userService.create(userDto), "添加");
     }
 
 
 
     public static void main(String[] args) {
-        UserVo userVo=new UserVo();
-        userVo.setName("1111");
-        BeanWrapper beanWrapper=new BeanWrapperImpl(userVo);
+        UserDto userDto =new UserDto();
+        userDto.setName("1111");
+        BeanWrapper beanWrapper=new BeanWrapperImpl(userDto);
         beanWrapper.getPropertyValue("name");
     }
 }

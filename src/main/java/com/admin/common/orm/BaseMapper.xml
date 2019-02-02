@@ -53,8 +53,7 @@
         <include refid="conditions"/>
     </select>
 
-    <insert id="create" parameterType="com.admin.common.orm.criteria.CreateCriteria" keyColumn="id" keyProperty="id"
-            useGeneratedKeys="true">
+    <insert id="create" parameterType="com.admin.common.orm.criteria.CreateCriteria">
         INSERT INTO ${tableName}
         <foreach collection="conditionList" item="item" separator="," open="(" close=")">
             <if test="item.value != null">
@@ -63,21 +62,27 @@
         </foreach>
         <foreach collection="conditionList" item="item" separator="," open=" VALUES(" close=")">
             <if test="item.value != null">
-                #{item.value}
+                #{item.value,jdbcType=VARCHAR}
             </if>
         </foreach>
     </insert>
 
-    <update id="update" parameterType="com.admin.common.orm.criteria.UpdateCriteria" >
+    <update id="update" parameterType="com.admin.common.orm.criteria.UpdateCriteria">
         UPDATE
         ${tableName}
         <set>
-            <foreach collection="conditionList" item="item" separator=",">
+            <foreach collection="updateValueList" item="item" separator=",">
                 <if test="item.value != null">
-                    ${item.column} = #{item.value}
+                    ${item.column} = #{item.value,jdbcType=VARCHAR}
                 </if>
             </foreach>
         </set>
-        <include refid="conditions" />
+        <include refid="conditions"/>
     </update>
+
+
+    <delete id="delete" parameterType="com.admin.common.orm.criteria.DeleteCriteria">
+        DELETE FROM ${tableName}
+        <include refid="conditions"/>
+    </delete>
 </mapper>

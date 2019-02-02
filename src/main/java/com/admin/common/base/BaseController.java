@@ -2,9 +2,8 @@ package com.admin.common.base;
 
 import com.admin.common.bean.ParamBean;
 import com.admin.common.bean.ResultBean;
-import com.admin.common.util.JsonUtil;
 import com.admin.common.util.StringUtil;
-import com.admin.model.user.UserVo;
+import com.admin.model.user.UserDto;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,8 +116,10 @@ public class BaseController {
         Integer pageSize = StringUtil.getInteger(getParam(ParamBean.PAGE_SIZE));
         paramBean.setPageNum(pageNum == null ? 1 : pageNum);
         paramBean.setPageSize(pageSize == null ? 20 : pageSize);
-        paramBean.setOrderType(getParam(ParamBean.ORDER_TYPE));
-        paramBean.setOrderField(getParam(ParamBean.ORDER_FIELD));
+        //paramBean.setOrderType(getParam(ParamBean.ORDER_TYPE));
+        //paramBean.setOrderField(getParam(ParamBean.ORDER_FIELD));
+        Map<String,String> orderMap=paramBean.getOrderMap();
+        orderMap.put("create_time","desc");
         paramBean.putAll(getParamMap(ParamBean.PAGE_NUM, ParamBean.PAGE_SIZE, ParamBean.ORDER_TYPE, ParamBean.ORDER_FIELD));
         soutParam(paramBean);
         filterParam(paramBean);
@@ -141,12 +142,38 @@ public class BaseController {
     }
 
     /**
+     * 封装返回的json
+     */
+    protected ResultBean success( String... msg) {
+        String message = "";
+        ResultBean resultBean;
+        if (msg.length > 0) {
+            message = msg[0];
+            resultBean = ResultBean.success(message);
+        } else {
+            resultBean = ResultBean.success();
+        }
+        return resultBean;
+    }
+    protected ResultBean fail(Object data, String... msg) {
+        String message = "";
+        ResultBean resultBean;
+        if (msg.length > 0) {
+            message = msg[0];
+            resultBean = ResultBean.fail(message, data);
+        } else {
+            resultBean = ResultBean.fail("异常",data);
+        }
+
+        return resultBean;
+    }
+    /**
      * 获取当前登录用户
      *
      * @return
      */
-    public UserVo getLoginUser() {
-        UserVo user = (UserVo) SecurityUtils.getSubject().getPrincipal();
+    public UserDto getLoginUser() {
+        UserDto user = (UserDto) SecurityUtils.getSubject().getPrincipal();
         return user;
     }
 }

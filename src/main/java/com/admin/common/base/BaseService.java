@@ -14,6 +14,7 @@ import java.util.Map;
  * @date 2017/11/8
  */
 public abstract class BaseService {
+    private final String PK="id";
     private BaseRepo baseRepo;
 
     public BaseRepo getBaseRepo() {
@@ -39,6 +40,16 @@ public abstract class BaseService {
         return createPageInfo(page, data);
     }
 
+
+    public <T> List<T> findListBy(Map<String,Object> map, Class<T> tClass, String... columns) {
+        return baseRepo.findListBy(map, tClass, columns);
+
+    }
+
+    public <T> List<T> findListBy(String field, String value ,Class<T> tClass, String... columns) {
+        return baseRepo.findListBy(field,value, tClass, columns);
+
+    }
     /**
      * 根据条件查询对象
      *
@@ -53,7 +64,10 @@ public abstract class BaseService {
         return baseRepo.findBy(field, value, tClass, columns);
 
     }
+    public <T> T findById( String value, Class<T> tClass, String... columns) {
+        return baseRepo.findBy(PK, value, tClass, columns);
 
+    }
     /**
      * 创建对象
      *
@@ -61,21 +75,21 @@ public abstract class BaseService {
      * @param <T>
      * @return
      */
-    public <T> Long create(T bean) {
-        return (Long) baseRepo.create(bean);
+    public <T> String create(T bean) {
+        return (String) baseRepo.create(bean);
     }
 
     /**
      * 更新对象
      *
-     * @param by
+     * @param field
      * @param value
      * @param bean
      * @param <T>
      * @return
      */
-    public <T> int update(String by, Object value, T bean) {
-        return baseRepo.update(by, value, bean);
+    public <T> Object update(String field, Object value, T bean) {
+        return baseRepo.update(field, value, bean);
     }
 
     private PageInfoBean createPageInfo(Page page, List<Map<String, Object>> data) {
@@ -87,4 +101,16 @@ public abstract class BaseService {
         pageInfoBean.setPages(page.getPages());
         return pageInfoBean;
     }
+
+    /**
+     * 删除
+     * @param field
+     * @param value
+     * @return 删除的记录数
+     */
+    public int delete(String field, Object value){
+        return baseRepo.delete(field,value);
+    }
+
+
 }

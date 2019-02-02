@@ -4,7 +4,7 @@ package com.admin.common.shiro;
 import com.admin.SysConstants;
 import com.admin.common.util.ApplicationContextUtil;
 import com.admin.model.sys.PermPo;
-import com.admin.model.user.UserVo;
+import com.admin.model.user.UserDto;
 import com.admin.service.SysService;
 import com.admin.service.UserService;
 
@@ -36,8 +36,8 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        UserVo userVo = (UserVo) principalCollection.getPrimaryPrincipal();
-        return getAuthrizationInfo(userVo);
+        UserDto userDto = (UserDto) principalCollection.getPrimaryPrincipal();
+        return getAuthrizationInfo(userDto);
     }
 
     /**
@@ -51,17 +51,17 @@ public class ShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         String account = token.getUsername();
-        UserVo userVo = ApplicationContextUtil.getBean(UserService.class).findByAccount(account);
-        if (userVo == null) {
+        UserDto userDto = ApplicationContextUtil.getBean(UserService.class).findByAccount(account);
+        if (userDto == null) {
             //用户不存在
             throw new UnknownAccountException();
         }
-        if (userVo.getStatus().equals(SysConstants.USER_STATUS_UNACTIVE)) {
+        if (userDto.getStatus().equals(SysConstants.USER_STATUS_UNACTIVE)) {
             //用户被禁用
             throw new DisabledAccountException();
         }
-        getAuthrizationInfo(userVo);
-        return new SimpleAuthenticationInfo(userVo, userVo.getPassword(), getName());
+        getAuthrizationInfo(userDto);
+        return new SimpleAuthenticationInfo(userDto, userDto.getPassword(), getName());
     }
 
     /**
@@ -94,14 +94,14 @@ public class ShiroRealm extends AuthorizingRealm {
         return userPerms;
     }
 
-    private AuthorizationInfo getAuthrizationInfo(UserVo userVo) {
+    private AuthorizationInfo getAuthrizationInfo(UserDto userDto) {
         SimpleAuthorizationInfo authorization = new SimpleAuthorizationInfo();
-        if (userVo.getPermSet() != null) {
-            authorization.setStringPermissions(userVo.getPermSet());
+        if (userDto.getPermSet() != null) {
+            authorization.setStringPermissions(userDto.getPermSet());
         } else {
-            Set<String> permSet = findUserPerm(userVo.getId());
+            Set<String> permSet = findUserPerm(userDto.getId());
             authorization.setStringPermissions(permSet);
-            userVo.setPermSet(authorization.getStringPermissions());
+            userDto.setPermSet(authorization.getStringPermissions());
         }
         return authorization;
     }
