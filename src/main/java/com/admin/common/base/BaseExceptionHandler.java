@@ -60,14 +60,17 @@ public class BaseExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ResultBean> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException     exception) {
         List<ObjectError> list= exception.getBindingResult().getAllErrors();
-        Map<String,String> validMap=new HashMap<>();
+        //Map<String,String> validMap=new HashMap<>();
+        String error="";
         for(ObjectError objectError:list){
             FieldError fieldError=(FieldError) objectError;
             String field=fieldError.getField();
             String valid=fieldError.getDefaultMessage();
-            validMap.put(field,valid);
+            // validMap.put(field,valid);
+            String e=field+"-"+valid+".";
+            error=error+e;
         }
-        ResultBean resultBean=new ResultBean(ResultBean.FAIL,"参数校验异常",validMap);
+        ResultBean resultBean=new ResultBean(ResultBean.FAIL,"参数校验异常",error);
         return response(resultBean, HttpStatus.OK);
     }
 

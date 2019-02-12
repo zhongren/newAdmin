@@ -3,7 +3,7 @@ package com.admin.controller;
 import com.admin.common.bean.ParamBean;
 import com.admin.common.base.BaseController;
 import com.admin.common.bean.ResultBean;
-import com.admin.model.param.TestRequest;
+import com.admin.model.req.TestRequest;
 import com.admin.model.user.UserDto;
 import com.admin.service.UserService;
 
