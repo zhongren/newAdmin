@@ -6,7 +6,7 @@ import com.admin.common.exception.AuthException;
 import com.admin.common.exception.BaseException;
 import com.admin.common.exception.enums.AuthEnum;
 import com.admin.model.user.UserDto;
-import com.admin.model.user.UserParamVo;
+import com.admin.model.user.UserParamDto;
 import org.apache.shiro.SecurityUtils;
 
 import org.apache.shiro.authc.DisabledAccountException;
@@ -30,9 +30,9 @@ public class AuthController extends BaseController {
     private final long DEFAULT_SESSION_TIMEOUT = 3600 * 1000;
 
     @RequestMapping(value = "login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean login(@RequestBody UserParamVo userParamVo) {
-        String account = userParamVo.getAccount();
-        String password = userParamVo.getPassword();
+    public ResultBean login(@RequestBody UserParamDto userParamDto) {
+        String account = userParamDto.getAccount();
+        String password = userParamDto.getPassword();
         System.out.println(account);
         System.out.println(password);
         Subject subject = SecurityUtils.getSubject();
